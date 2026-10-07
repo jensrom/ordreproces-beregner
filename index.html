@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ordreprocessens reelle pris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: kontrolpanel til venstre, resultater til højre; ovenover en konklusion der regnes live. Tonen er en driftsrapport: stål, papir og signalorange. */
+:root{
+  --bg:#f3f4f2; --surface:#ffffff; --ink:#1b2328; --muted:#5b666d; --line:#d9ddda;
+  --steel:#2f4a5a; --steel-soft:#e3eaee; --signal:#d4600f; --signal-soft:#fbe9dc;
+  --good:#2f7d4f; --good-soft:#e0f0e6; --bad:#b33a2b;
+  --c1:#2f4a5a; --c2:#6f8fa3; --c3:#d4600f; --c4:#e6a36b;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141a1e; --surface:#1c2429; --ink:#e7ecee; --muted:#9aa7ae; --line:#2e3a41;
+  --steel:#8fb3c7; --steel-soft:#24333c; --signal:#f08a3e; --signal-soft:#3a2617;
+  --good:#6cc28f; --good-soft:#1c3226; --bad:#ec7a6a;
+  --c1:#8fb3c7; --c2:#4f6f82; --c3:#f08a3e; --c4:#a8653a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a1e; --surface:#1c2429; --ink:#e7ecee; --muted:#9aa7ae; --line:#2e3a41;
+  --steel:#8fb3c7; --steel-soft:#24333c; --signal:#f08a3e; --signal-soft:#3a2617;
+  --good:#6cc28f; --good-soft:#1c3226; --bad:#ec7a6a;
+  --c1:#8fb3c7; --c2:#4f6f82; --c3:#f08a3e; --c4:#a8653a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:flex;flex-direction:column;gap:36px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+p{margin:0;max-width:68ch}
+.num,td.n,th.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* Header */
+header{display:flex;flex-direction:column;gap:14px}
+.thesis{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:stretch}
+.lead{font-size:1.12rem;color:var(--ink)}
+.lead b{font-weight:700}
+.invoice{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;font-family:var(--f-mono);font-size:.9rem}
+.invoice .row{display:flex;justify-content:space-between;gap:12px}
+.invoice .total{border-top:1px dashed var(--line);padding-top:10px;font-weight:600}
+.invoice .net{color:var(--signal);font-weight:600}
+.invoice .tag{font-family:var(--f-body);font-size:.8rem;color:var(--muted)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.kpi{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .v{font-family:var(--f-display);font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .s{font-size:.85rem;color:var(--muted)}
+.kpi.hl .v{color:var(--good)}
+
+/* Main grid */
+.main{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.controls{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+legend{padding:0;margin-bottom:6px}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.92rem}
+.ctl output{font-family:var(--f-mono);font-size:.88rem;font-weight:600;color:var(--steel);white-space:nowrap}
+.ctl small{color:var(--muted);font-size:.78rem}
+input[type=range]{width:100%;accent-color:var(--steel);margin:0}
+input[type=number]{width:100%;font:inherit;font-family:var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair .ctl output{color:var(--signal)}
+.pairhead{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.steplabel{font-size:.9rem;font-weight:600}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:6px 10px;border-radius:4px;cursor:pointer}
+button:hover{border-color:var(--steel)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+hr{border:0;border-top:1px solid var(--line);margin:0;width:100%}
+
+/* Results */
+.results{display:flex;flex-direction:column;gap:24px;min-width:0}
+.bars{display:flex;flex-direction:column;gap:14px}
+.barrow{display:grid;grid-template-columns:110px minmax(0,1fr) 92px;gap:12px;align-items:center}
+.barrow .lbl{font-size:.9rem;font-weight:600}
+.track{height:30px;display:flex;border-radius:3px;overflow:hidden;background:var(--bg)}
+.track span{height:100%;transition:width .25s ease}
+.barrow .tot{font-family:var(--f-mono);font-weight:600;text-align:right}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:700;border-bottom:0}
+tr.cur td{background:var(--steel-soft)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:.78rem;padding:1px 7px;border-radius:99px;font-weight:600}
+.pill.r{background:var(--signal-soft);color:var(--signal)}
+.pill.g{background:var(--good-soft);color:var(--good)}
+.pill.s{background:var(--steel-soft);color:var(--steel)}
+
+/* Data section */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.fact{border-top:3px solid var(--signal);padding-top:10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fact .v{font-family:var(--f-display);font-size:1.6rem;font-weight:700}
+.fact p{font-size:.92rem;color:var(--muted)}
+details{border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details .tbl{padding:0 6px 10px}
+.section{display:flex;flex-direction:column;gap:16px}
+.method{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;font-size:.93rem}
+.method ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.method code{font-family:var(--f-mono);font-size:.85rem;background:var(--steel-soft);padding:1px 5px;border-radius:3px}
+footer{font-size:.82rem;color:var(--muted)}
+
+@media (max-width:980px){
+  .main{grid-template-columns:minmax(0,1fr)}
+  .controls{position:static;max-height:none}
+  .thesis{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts,.method{grid-template-columns:minmax(0,1fr)}
+  .barrow{grid-template-columns:80px minmax(0,1fr) 78px}
+}
+@media (prefers-reduced-motion:reduce){.track span{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Novotek Danmark · Business case · Salgschef og Managing Director</span>
+  <h1>Ordreprocessens reelle pris</h1>
+  <div class="thesis">
+    <p class="lead" id="lead"></p>
+    <div class="invoice" aria-label="Eksempel: fakturering af én konsulenttime">
+      <div class="row"><span>Faktura: 1 konsulenttime</span><span class="num" id="inv-val"></span></div>
+      <div class="row"><span>− Sælger, SaSMS + Salesforce</span><span class="num" id="inv-s"></span></div>
+      <div class="row"><span>− Intern sælger</span><span class="num" id="inv-i"></span></div>
+      <div class="row"><span>− Bogholder</span><span class="num" id="inv-b"></span></div>
+      <div class="row total"><span>Tilbage efter administration</span><span class="num net" id="inv-net"></span></div>
+      <span class="tag" id="inv-tag"></span>
+    </div>
+  </div>
+</header>
+
+<section class="kpis" aria-label="Nøgletal">
+  <div class="kpi"><h3>Proceskost pr. ordre i dag</h3><span class="v" id="k1"></span><span class="s" id="k1s"></span></div>
+  <div class="kpi"><h3>Årlig proceskost i dag</h3><span class="v" id="k2"></span><span class="s" id="k2s"></span></div>
+  <div class="kpi hl"><h3>Årlig besparelse</h3><span class="v" id="k3"></span><span class="s" id="k3s"></span></div>
+  <div class="kpi"><h3>Kapacitet med samme folk</h3><span class="v" id="k4"></span><span class="s" id="k4s"></span></div>
+</section>
+
+<div class="main">
+  <aside class="panel controls" aria-label="Forudsætninger">
+    <fieldset>
+      <legend><h3>Volumen</h3></legend>
+      <div class="presets">
+        <button type="button" id="pre-hist">Historik: 2 sælgere</button>
+        <button type="button" id="pre-scen">Scenarie: 5 sælgere</button>
+      </div>
+      <div class="ctl"><div class="top"><label for="sellers">Antal sælgere</label><output id="o-sellers"></output></div>
+        <input type="range" id="sellers" min="1" max="10" step="1" value="5"></div>
+      <div class="ctl"><div class="top"><label for="opd">Ordrer pr. sælger pr. dag</label><output id="o-opd"></output></div>
+        <input type="range" id="opd" min="0.1" max="3" step="0.01" value="1">
+        <small>Historik fra SaSMS: 0,23 pr. sælger pr. dag</small></div>
+      <div class="ctl"><div class="top"><label for="inv">Fakturaer pr. ordre (gns.)</label><output id="o-inv"></output></div>
+        <input type="range" id="inv" min="1" max="3" step="0.1" value="1.4">
+        <small>8 af 42 ordrer faktureres i 3 rater, dvs. 1,4 i snit</small></div>
+    </fieldset>
+    <hr>
+    <fieldset>
+      <legend><h3>Månedsløn</h3></legend>
+      <div class="ctl"><div class="top"><label for="w-s">Sælger</label><output id="o-w-s"></output></div>
+        <input type="range" id="w-s" min="40000" max="75000" step="1000" value="55000"></div>
+      <div class="ctl"><div class="top"><label for="w-i">Intern sælger</label><output id="o-w-i"></output></div>
+        <input type="range" id="w-i" min="30000" max="60000" step="500" value="42500"></div>
+      <div class="ctl"><div class="top"><label for="w-b">Bogholder</label><output id="o-w-b"></output></div>
+        <input type="range" id="w-b" min="28000" max="60000" step="1000" value="40000"></div>
+      <div class="ctl"><div class="top"><label for="pen">Arbejdsgiverpension</label><output id="o-pen"></output></div>
+        <input type="range" id="pen" min="0" max="15" step="0.5" value="10"></div>
+      <div class="ctl"><div class="top"><label for="oth">Øvrige lønomk. (ATP, AES, forsikring)</label><output id="o-oth"></output></div>
+        <input type="range" id="oth" min="0" max="6" step="0.5" value="2"></div>
+      <div class="ctl"><div class="top"><label for="ovh">Overhead pr. medarbejder pr. år</label><output id="o-ovh"></output></div>
+        <input type="range" id="ovh" min="0" max="120000" step="5000" value="0">
+        <small>0 kr. er konservativt: kontor, IT og licenser er ikke medregnet</small></div>
+    </fieldset>
+    <hr>
+    <fieldset>
+      <legend><h3>Arbejdstid</h3></legend>
+      <div class="ctl"><div class="top"><label for="norm">Normtid pr. uge</label><output id="o-norm"></output></div>
+        <input type="range" id="norm" min="30" max="40" step="0.5" value="37"></div>
+      <div class="ctl"><div class="top"><label for="hol">Ferie + feriefridage</label><output id="o-hol"></output></div>
+        <input type="range" id="hol" min="20" max="35" step="1" value="30"></div>
+      <div class="ctl"><div class="top"><label for="sick">Sygedage pr. år</label><output id="o-sick"></output></div>
+        <input type="range" id="sick" min="0" max="15" step="1" value="5"></div>
+    </fieldset>
+    <hr>
+    <fieldset>
+      <legend><h3>Minutter pr. ordre</h3></legend>
+      <div class="pairhead"><span>I dag (SaSMS)</span><span>Optimeret system</span></div>
+      <div class="steplabel">Sælger: klargøring af ordre</div>
+      <div class="pair">
+        <div class="ctl"><div class="top"><label for="t1a">I dag</label><output id="o-t1a"></output></div><input type="range" id="t1a" min="10" max="120" step="5" value="60"></div>
+        <div class="ctl"><div class="top"><label for="t1b">Optimeret</label><output id="o-t1b"></output></div><input type="range" id="t1b" min="0" max="120" step="5" value="15"></div>
+      </div>
+      <div class="steplabel">Sælger: registrering i Salesforce</div>
+      <div class="pair">
+        <div class="ctl"><div class="top"><label for="t2a">I dag</label><output id="o-t2a"></output></div><input type="range" id="t2a" min="0" max="60" step="5" value="15"></div>
+        <div class="ctl"><div class="top"><label for="t2b">Optimeret</label><output id="o-t2b"></output></div><input type="range" id="t2b" min="0" max="60" step="5" value="5"></div>
+      </div>
+      <div class="steplabel">Intern sælger: distributør, sammenkobling, klar til bogføring</div>
+      <div class="pair">
+        <div class="ctl"><div class="top"><label for="t3a">I dag</label><output id="o-t3a"></output></div><input type="range" id="t3a" min="5" max="90" step="5" value="30"></div>
+        <div class="ctl"><div class="top"><label for="t3b">Optimeret</label><output id="o-t3b"></output></div><input type="range" id="t3b" min="0" max="90" step="5" value="15"></div>
+      </div>
+      <div class="steplabel">Bogholder: bogføring pr. faktura</div>
+      <div class="pair">
+        <div class="ctl"><div class="top"><label for="t4a">I dag</label><output id="o-t4a"></output></div><input type="range" id="t4a" min="0" max="45" step="1" value="15"></div>
+        <div class="ctl"><div class="top"><label for="t4b">Optimeret</label><output id="o-t4b"></output></div><input type="range" id="t4b" min="0" max="45" step="1" value="5"></div>
+      </div>
+    </fieldset>
+    <hr>
+    <fieldset>
+      <legend><h3>Investering i systemskift</h3></legend>
+      <div class="ctl"><label for="capex">Engangsbeløb (kr.)</label><input type="number" id="capex" min="0" step="10000" value="0" inputmode="numeric"></div>
+      <div class="ctl"><label for="opex">Løbende drift pr. år (kr.)</label><input type="number" id="opex" min="0" step="5000" value="0" inputmode="numeric"></div>
+      <small style="color:var(--muted);font-size:.78rem">Udfyld for at se tilbagebetalingstid.</small>
+    </fieldset>
+    <button type="button" id="reset">Nulstil til standard</button>
+  </aside>
+
+  <div class="results">
+    <section class="panel">
+      <h2>Hvad én ordre koster at administrere</h2>
+      <div class="bars">
+        <div class="barrow"><span class="lbl">I dag</span><div class="track" id="bar-a"></div><span class="tot" id="bar-a-t"></span></div>
+        <div class="barrow"><span class="lbl">Optimeret</span><div class="track" id="bar-b"></div><span class="tot" id="bar-b-t"></span></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--c1)"></i>Sælger, SaSMS</span>
+        <span><i style="background:var(--c2)"></i>Sælger, Salesforce</span>
+        <span><i style="background:var(--c3)"></i>Intern sælger</span>
+        <span><i style="background:var(--c4)"></i>Bogholder</span>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>Trin</th><th class="n">Timepris</th><th class="n">Min. i dag</th><th class="n">Kr. i dag</th><th class="n">Min. optimeret</th><th class="n">Kr. optimeret</th></tr></thead>
+        <tbody id="steps"></tbody>
+      </table></div>
+    </section>
+
+    <section class="panel">
+      <h2>Scenarier: 3 til 7 sælgere</h2>
+      <p style="color:var(--muted);font-size:.92rem" id="scen-note"></p>
+      <div class="tbl"><table>
+        <thead><tr><th>Sælgere</th><th class="n">Ordrer/år</th><th class="n">Timer i dag</th><th class="n">Årsværk i dag</th><th class="n">Kost i dag</th><th class="n">Kost optimeret</th><th class="n">Besparelse/år</th><th class="n">Frigjorte timer</th></tr></thead>
+        <tbody id="scen"></tbody>
+      </table></div>
+    </section>
+
+    <section class="panel">
+      <h2>Fordeling af frigjort tid pr. år</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Rolle</th><th class="n">Timer i dag</th><th class="n">Timer optimeret</th><th class="n">Frigjort</th><th class="n">Årsværk</th><th class="n">Kr.</th></tr></thead>
+        <tbody id="roles"></tbody>
+      </table></div>
+      <p style="font-size:.92rem;color:var(--muted)" id="payback"></p>
+    </section>
+  </div>
+</div>
+
+<section class="section">
+  <div><span class="eyebrow">Datagrundlag</span><h2>42 ordrer fra SaSMS, 29-05-2026 til 05-10-2026</h2></div>
+  <p>Ordrerne D35383 til D35424 dækker 92 arbejdsdage. Sælger EN står for 37, sælger JRO for 5. Kundenavne er anonymiseret. Proceskosten herunder er beregnet med de nuværende tal i panelet og bruger det faktiske antal fakturaer pr. ordre.</p>
+  <div class="facts">
+    <div class="fact"><span class="v num" id="f1"></span><p id="f1t"></p></div>
+    <div class="fact"><span class="v num">8 af 42</span><p>ordrer faktureres i 3 rater. Hver rate er en ny faktura og en ny bogføring.</p></div>
+    <div class="fact"><span class="v num">5 ordrer</span><p>for én Octoplant-aftale med samme kunde (D35384–D35388), fordi kundens selskaber skal deles op. Hele processen gennemføres 5 gange.</p></div>
+  </div>
+  <div class="tbl panel" style="padding:8px 10px"><table>
+    <thead><tr><th>Ordreværdi</th><th class="n">Antal</th><th class="n">Samlet værdi</th><th class="n">Proceskost i alt</th><th class="n">Proceskost i % af værdi</th></tr></thead>
+    <tbody id="buckets"></tbody>
+  </table></div>
+  <details>
+    <summary>Se alle 42 ordrer</summary>
+    <div class="tbl"><table>
+      <thead><tr><th>Ordre</th><th>Sælger</th><th>Kunde</th><th>Indhold</th><th>Type</th><th>Ordredato</th><th class="n">Værdi</th><th class="n">Fakturaer</th><th class="n">Proceskost</th><th class="n">% af værdi</th></tr></thead>
+      <tbody id="orders"></tbody>
+    </table></div>
+  </details>
+</section>
+
+<section class="section">
+  <div><span class="eyebrow">Metode</span><h2>Forudsætninger og beregning</h2></div>
+  <div class="method">
+    <ul>
+      <li>Timepris = <code>månedsløn × 12 × (1 + pension + øvrige lønomk.) ÷ produktive timer</code>, plus overhead ÷ produktive timer.</li>
+      <li>Produktive timer = (260 − ferie og feriefridage − 9 helligdage − sygedage) × normtid ÷ 5.</li>
+      <li>Ordrer pr. år = sælgere × ordrer pr. dag × (260 − ferie − 9 helligdage) arbejdsdage.</li>
+      <li>Bogholderens tid ganges med antal fakturaer pr. ordre. Øvrige trin sker én gang pr. ordre.</li>
+    </ul>
+    <ul>
+      <li>Frigjort tid regnes som kapacitet: den samme bemanding kan behandle flere ordrer. Faktoren er minutter i dag ÷ minutter optimeret.</li>
+      <li>Konsulenttimen til 1.300 kr. er den simpleste ordretype og vurderet til 1 times sælgertid. Licenser og fornyelser tager typisk længere.</li>
+      <li>Ikke medregnet: rettelser og kreditnotaer, likviditet ved forsinket fakturering, oplæring i SaSMS og afhængighed af én intern udvikler.</li>
+      <li>Optimerede tider er antagelser for et system med én registrering og automatisk overførsel. De skal valideres ved en tidsmåling.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Kilde: SaSMS-ordreliste pr. 07-10-2026 og interne lønantagelser. Alle beløb i DKK ekskl. moms.</footer>
+</div>
+
+<script>
+const ORDERS = [
+["D35424","JRO","Kunde 01","Idus","Fornyelse","05-10-2026",11880,0],
+["D35423","JRO","Kunde 02","Idus Online","Fornyelse","02-10-2026",14625,0],
+["D35422","EN","Kunde 03","Add on: Asset Lifecycle + API","Licens","30-09-2026",120000,0],
+["D35421","EN","Kunde 04","Octoplant Core","Licens","29-09-2026",0,0],
+["D35420","EN","Kunde 05","Idus","Fornyelse","29-09-2026",41915,0],
+["D35419","EN","Kunde 05","Idus IS","Fornyelse","29-09-2026",19757,0],
+["D35418","EN","Kunde 06","Fornyelse","Fornyelse","24-09-2026",2041200,0],
+["D35417","JRO","Kunde 07","Idus Online Enterprise licens","Licens","22-09-2026",6575,0],
+["D35416","EN","Kunde 08","2026 - 6 x Idus Online Pro","Fornyelse","11-09-2026",37800,37800],
+["D35415","EN","Kunde 09","Renewal","Fornyelse","11-09-2026",170100,56700],
+["D35414","JRO","Kunde 10","4 x Idus Online Professional","Licens","04-09-2026",14700,14700],
+["D35413","EN","Kunde 11","Klippekort - 10 timer","Konsulent","02-09-2026",11700,11700],
+["D35412","EN","Kunde 12","3 ekstra Idus Online Professional","Licens","01-09-2026",18000,18000],
+["D35411","JRO","Kunde 13","Udvidelse 1 ekstra Idus Online","Licens","31-08-2026",5900,5900],
+["D35410","EN","Kunde 14","Octoplant","Fornyelse","31-08-2026",318765,101115],
+["D35409","EN","Kunde 15","Octoplant","Fornyelse","27-08-2026",66587,66587],
+["D35408","EN","Kunde 16","2 x Idus Online","Fornyelse","26-08-2026",12600,12600],
+["D35407","EN","Kunde 17","1x Idus Online","Fornyelse","21-08-2026",6600,6600],
+["D35406","EN","Kunde 18","Fornyelse","Fornyelse","21-08-2026",50925,50925],
+["D35405","EN","Kunde 19","Opgradering til Enterprise + 1","Licens","21-08-2026",11360,11360],
+["D35404","EN","Kunde 20","3 x ekstra Idus Online Professional","Licens","20-08-2026",20475,20475],
+["D35403","EN","Kunde 21","Idus Online","Fornyelse","17-08-2026",31500,31500],
+["D35402","EN","Kunde 22","Klippekort - 15 timer","Konsulent","14-08-2026",17550,17550],
+["D35401","EN","Kunde 23","Idus","Fornyelse","11-08-2026",63000,63000],
+["D35400","EN","Kunde 24","Renewal - 2026 - 5 x Idus","Fornyelse","05-08-2026",19800,19800],
+["D35399","EN","Kunde 25","Ekstra Idus bruger","Licens","10-07-2026",6225,6225],
+["D35398","EN","Kunde 26","Konsulentassistance","Konsulent","06-07-2026",0,0],
+["D35397","EN","Kunde 12","Ekstra Idus Online bruger","Licens","03-07-2026",8100,8100],
+["D35396","EN","Kunde 27","Fornyelse","Fornyelse","02-07-2026",15840,15840],
+["D35395","EN","Kunde 28","Konsulentassistance klippekort","Konsulent","01-07-2026",35100,35100],
+["D35394","EN","Kunde 17","1x Idus Online Professional + 1","Licens","24-06-2026",18300,18300],
+["D35393","EN","Kunde 22","Idus","Fornyelse","23-06-2026",42815,42815],
+["D35392","EN","Kunde 26","Konsulentassistance","Konsulent","22-06-2026",0,0],
+["D35391","EN","Kunde 03","Renewal & Upgrade","Fornyelse","17-06-2026",1055315,334755],
+["D35390","EN","Kunde 12","2 x Idus Online Professional +","Licens","11-06-2026",24900,24900],
+["D35389","EN","Kunde 29","Klippekort - 20 timer","Konsulent","11-06-2026",23400,23400],
+["D35388","EN","Kunde S (selskab 1)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["D35387","EN","Kunde S (selskab 2)","Octoplant","Fornyelse","08-06-2026",21461,6943],
+["D35386","EN","Kunde S (selskab 3)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["D35385","EN","Kunde S (selskab 4)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["D35384","EN","Kunde S (selskab 5)","Octoplant","Fornyelse","08-06-2026",128765,41659],
+["D35383","EN","Kunde 30","Idus Online Basic - 1 ekstra bruger","Licens","29-05-2026",3300,3300]
+].map(r=>({nr:r[0],s:r[1],k:r[2],ind:r[3],type:r[4],dato:r[5],v:r[6],f:r[7],
+  rater:(r[7]>0&&r[7]<r[6])?Math.round(r[6]/r[7]):1}));
+
+const DEF = {sellers:5,opd:1,inv:1.4,"w-s":55000,"w-i":42500,"w-b":40000,pen:10,oth:2,ovh:0,norm:37,hol:30,sick:5,t1a:60,t1b:15,t2a:15,t2b:5,t3a:30,t3b:15,t4a:15,t4b:5,capex:0,opex:0};
+const $ = id => document.getElementById(id);
+const nf0 = new Intl.NumberFormat('da-DK',{maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat('da-DK',{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat('da-DK',{minimumFractionDigits:2,maximumFractionDigits:2});
+const kr = v => nf0.format(Math.round(v))+' kr.';
+const tkr = v => Math.abs(v)>=1e6 ? nf2.format(v/1e6)+' mio. kr.' : nf0.format(Math.round(v/1000))+' t.kr.';
+const pct = v => nf0.format(Math.round(v*100))+' %';
+const val = id => parseFloat($(id).value)||0;
+
+function model(p){
+  const prodDays = 260 - p.hol - 9 - p.sick;
+  const prodHours = prodDays * p.norm / 5;
+  const workDays = 260 - p.hol - 9;
+  const load = 1 + (p.pen + p.oth)/100;
+  const rate = m => (m*12*load + p.ovh) / prodHours;
+  const rS = rate(p['w-s']), rI = rate(p['w-i']), rB = rate(p['w-b']);
+  const steps = [
+    {n:'Sælger: klargøring i SaSMS', role:'Sælger', r:rS, a:p.t1a, b:p.t1b, c:'var(--c1)'},
+    {n:'Sælger: registrering i Salesforce', role:'Sælger', r:rS, a:p.t2a, b:p.t2b, c:'var(--c2)'},
+    {n:'Intern sælger: distributør og klargøring', role:'Intern sælger', r:rI, a:p.t3a, b:p.t3b, c:'var(--c3)'},
+    {n:'Bogholder: bogføring ('+nf1.format(p.inv)+' fakt.)', role:'Bogholder', r:rB, a:p.t4a*p.inv, b:p.t4b*p.inv, c:'var(--c4)'}
+  ];
+  steps.forEach(s=>{s.ka=s.r*s.a/60; s.kb=s.r*s.b/60});
+  const minA = steps.reduce((t,s)=>t+s.a,0), minB = steps.reduce((t,s)=>t+s.b,0);
+  const costA = steps.reduce((t,s)=>t+s.ka,0), costB = steps.reduce((t,s)=>t+s.kb,0);
+  const perYear = n => n * p.opd * workDays;
+  // pr. ordre med givet antal fakturaer
+  const orderCost = (rater, opt) => steps.reduce((t,s,i)=>{
+    const m = i===3 ? (opt?p.t4b:p.t4a)*rater : (opt?s.b:s.a);
+    return t + s.r*m/60;
+  },0);
+  return {prodHours,workDays,rS,rI,rB,steps,minA,minB,costA,costB,perYear,orderCost};
+}
+
+function bar(el, steps, key, max){
+  el.innerHTML = steps.map(s=>`<span style="width:${(s[key]/max*100).toFixed(2)}%;background:${s.c}" title="${s.n}: ${kr(s[key])}"></span>`).join('');
+}
+
+function render(){
+  const p = {}; Object.keys(DEF).forEach(k=>p[k]=val(k));
+  // outputs
+  const fmt = {sellers:v=>v, opd:v=>nf2.format(v), inv:v=>nf1.format(v), 'w-s':v=>nf0.format(v)+' kr.', 'w-i':v=>nf0.format(v)+' kr.', 'w-b':v=>nf0.format(v)+' kr.',
+    pen:v=>nf1.format(v)+' %', oth:v=>nf1.format(v)+' %', ovh:v=>nf0.format(v)+' kr.', norm:v=>nf1.format(v)+' t', hol:v=>v+' dage', sick:v=>v+' dage'};
+  Object.keys(fmt).forEach(k=>$('o-'+k).textContent=fmt[k](p[k]));
+  ['t1a','t1b','t2a','t2b','t3a','t3b','t4a','t4b'].forEach(k=>$('o-'+k).textContent=p[k]+' min');
+
+  const m = model(p);
+  const ordersY = m.perYear(p.sellers);
+  const yA = ordersY*m.costA, yB = ordersY*m.costB, save = yA-yB - p.opex;
+  const hA = ordersY*m.minA/60, hB = ordersY*m.minB/60;
+  const factor = m.minB>0 ? m.minA/m.minB : Infinity;
+
+  // Konsulenttime-eksempel (1 faktura)
+  const sCost = m.steps[0].ka + m.steps[1].ka, iCost = m.steps[2].ka, bCost = m.rB*p.t4a/60;
+  const consult = sCost+iCost+bCost, consultB = m.orderCost(1,true);
+  $('inv-val').textContent = kr(1300);
+  $('inv-s').textContent = '−'+kr(sCost);
+  $('inv-i').textContent = '−'+kr(iCost);
+  $('inv-b').textContent = '−'+kr(bCost);
+  $('inv-net').textContent = kr(1300-consult);
+  $('inv-tag').textContent = `Administration æder ${pct(consult/1300)} af omsætningen. Med optimeret system: ${pct(consultB/1300)}.`;
+
+  $('lead').innerHTML = `Med <b>${p.sellers} sælgere</b> og <b>${nf2.format(p.opd)} ordre pr. sælger pr. dag</b> håndterer Novotek ca. <b>${nf0.format(ordersY)} ordrer om året</b>. Hver ordre koster i dag <b>${kr(m.costA)}</b> og <b>${nf0.format(m.minA)} minutter</b> i intern administration, før kunden har fået noget. Det er <b>${nf0.format(hA)} timer</b> eller <b>${nf1.format(hA/m.prodHours)} årsværk</b> om året. Et system med én registrering og automatisk overførsel kan spare <b>${tkr(yA-yB)}</b> om året og lade de samme folk håndtere <b>${isFinite(factor)?nf1.format(factor)+' gange':'langt'} så mange ordrer</b>.`;
+
+  $('k1').textContent = kr(m.costA);
+  $('k1s').textContent = `${nf0.format(m.minA)} min. · optimeret ${kr(m.costB)}`;
+  $('k2').textContent = tkr(yA);
+  $('k2s').textContent = `${nf0.format(ordersY)} ordrer · ${nf1.format(hA/m.prodHours)} årsværk`;
+  $('k3').textContent = tkr(yA-yB-p.opex);
+  $('k3s').textContent = `${nf0.format(hA-hB)} timer frigjort${p.opex?' · efter drift':''}`;
+  $('k4').textContent = isFinite(factor) ? nf1.format(factor)+'×' : '∞';
+  $('k4s').textContent = isFinite(factor) ? `+${nf0.format(ordersY*(factor-1))} ordrer/år uden flere folk` : '';
+
+  const max = Math.max(m.costA, m.costB);
+  bar($('bar-a'), m.steps, 'ka', max); bar($('bar-b'), m.steps, 'kb', max);
+  $('bar-a-t').textContent = kr(m.costA); $('bar-b-t').textContent = kr(m.costB);
+
+  $('steps').innerHTML = m.steps.map(s=>`<tr><td><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.c};margin-right:8px"></i>${s.n}</td><td class="n">${kr(s.r)}/t</td><td class="n">${nf0.format(s.a)}</td><td class="n">${kr(s.ka)}</td><td class="n">${nf0.format(s.b)}</td><td class="n">${kr(s.kb)}</td></tr>`).join('')
+    + `<tr class="sum"><td>I alt pr. ordre</td><td></td><td class="n">${nf0.format(m.minA)}</td><td class="n">${kr(m.costA)}</td><td class="n">${nf0.format(m.minB)}</td><td class="n">${kr(m.costB)}</td></tr>`;
+
+  $('scen-note').textContent = `${nf2.format(p.opd)} ordre pr. sælger pr. dag over ${m.workDays} arbejdsdage. Rækken med det valgte antal sælgere er markeret.`;
+  const rows=[3,4,5,6,7]; if(!rows.includes(p.sellers)) rows.push(p.sellers); rows.sort((a,b)=>a-b);
+  $('scen').innerHTML = rows.map(n=>{const o=m.perYear(n),a=o*m.costA,b=o*m.costB,h=o*m.minA/60;
+    return `<tr class="${n===p.sellers?'cur':''}"><td>${n}</td><td class="n">${nf0.format(o)}</td><td class="n">${nf0.format(h)}</td><td class="n">${nf1.format(h/m.prodHours)}</td><td class="n">${tkr(a)}</td><td class="n">${tkr(b)}</td><td class="n pos">${tkr(a-b)}</td><td class="n">${nf0.format(h-o*m.minB/60)}</td></tr>`}).join('');
+
+  const roles = [['Sælger',[0,1],m.rS],['Intern sælger',[2],m.rI],['Bogholder',[3],m.rB]];
+  let tot=[0,0,0];
+  $('roles').innerHTML = roles.map(([n,idx,r])=>{
+    const a=idx.reduce((t,i)=>t+m.steps[i].a,0)*ordersY/60, b=idx.reduce((t,i)=>t+m.steps[i].b,0)*ordersY/60;
+    tot[0]+=a; tot[1]+=b; tot[2]+=(a-b)*r;
+    return `<tr><td>${n}</td><td class="n">${nf0.format(a)}</td><td class="n">${nf0.format(b)}</td><td class="n">${nf0.format(a-b)}</td><td class="n">${nf2.format((a-b)/m.prodHours)}</td><td class="n pos">${tkr((a-b)*r)}</td></tr>`}).join('')
+    + `<tr class="sum"><td>I alt</td><td class="n">${nf0.format(tot[0])}</td><td class="n">${nf0.format(tot[1])}</td><td class="n">${nf0.format(tot[0]-tot[1])}</td><td class="n">${nf2.format((tot[0]-tot[1])/m.prodHours)}</td><td class="n pos">${tkr(tot[2])}</td></tr>`;
+
+  const net = yA-yB-p.opex;
+  if(p.capex>0){
+    $('payback').innerHTML = net>0 ? `Med en investering på ${kr(p.capex)} er tilbagebetalingstiden <b>${nf1.format(p.capex/net*12)} måneder</b>.` : `Med de valgte tal dækker besparelsen ikke driftsomkostningen.`;
+  } else {
+    $('payback').innerHTML = `Et systemskift må koste op til <b>${tkr(net)}</b> og stadig være tjent hjem på 12 måneder. Over 3 år er det <b>${tkr(net*3)}</b>.`;
+  }
+
+  // Historik
+  let zero=0, tv=0, tc=0;
+  const B=[['0 kr.',v=>v===0],['1–10.000 kr.',v=>v>0&&v<10000],['10.000–20.000 kr.',v=>v>=10000&&v<20000],['20.000–50.000 kr.',v=>v>=20000&&v<50000],['50.000–100.000 kr.',v=>v>=50000&&v<100000],['Over 100.000 kr.',v=>v>=100000]];
+  const agg=B.map(()=>({n:0,v:0,c:0}));
+  ORDERS.forEach(o=>{o.cost=m.orderCost(o.rater,false); B.forEach((b,i)=>{if(b[1](o.v)){agg[i].n++;agg[i].v+=o.v;agg[i].c+=o.cost}}); if(o.v===0)zero++; tv+=o.v; tc+=o.cost;});
+  $('buckets').innerHTML = B.map((b,i)=>{const a=agg[i]; const r=a.v>0?a.c/a.v:null;
+    const cls = r===null?'r':r>0.05?'r':r>0.01?'s':'g';
+    return `<tr><td>${b[0]}</td><td class="n">${a.n}</td><td class="n">${kr(a.v)}</td><td class="n">${kr(a.c)}</td><td class="n"><span class="pill ${cls}">${r===null?'ingen omsætning':nf1.format(r*100)+' %'}</span></td></tr>`}).join('')
+    + `<tr class="sum"><td>I alt</td><td class="n">42</td><td class="n">${kr(tv)}</td><td class="n">${kr(tc)}</td><td class="n">${nf1.format(tc/tv*100)} %</td></tr>`;
+  const small = ORDERS.filter(o=>o.v<10000);
+  $('f1').textContent = small.length+' af 42';
+  $('f1t').textContent = `ordrer er under 10.000 kr., og 3 af dem er på 0 kr. De koster tilsammen ${kr(small.reduce((t,o)=>t+o.cost,0))} i administration.`;
+  $('orders').innerHTML = ORDERS.map(o=>{const r=o.v>0?o.cost/o.v:null; const cls=r===null?'r':r>0.05?'r':r>0.01?'s':'g';
+    return `<tr><td class="num">${o.nr}</td><td>${o.s}</td><td>${o.k}</td><td>${o.ind}</td><td>${o.type}</td><td class="num">${o.dato}</td><td class="n">${nf0.format(o.v)}</td><td class="n">${o.rater}</td><td class="n">${kr(o.cost)}</td><td class="n"><span class="pill ${cls}">${r===null?'–':nf1.format(r*100)+' %'}</span></td></tr>`}).join('');
+}
+
+function setVals(o){Object.entries(o).forEach(([k,v])=>{$(k).value=v}); render();}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+$('reset').addEventListener('click',()=>setVals(DEF));
+$('pre-hist').addEventListener('click',()=>setVals({sellers:2,opd:0.23}));
+$('pre-scen').addEventListener('click',()=>setVals({sellers:5,opd:1}));
+render();
+</script>
+</body>
+</html>
