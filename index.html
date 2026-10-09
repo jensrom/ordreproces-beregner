@@ -132,13 +132,13 @@ footer{font-size:.82rem;color:var(--muted)}
 
 <div class="wrap">
 <header>
-  <span class="eyebrow">Novotek Danmark · Business case · Salgschef og Managing Director</span>
+  <span class="eyebrow">Business case · Salgschef og Managing Director</span>
   <h1>Ordreprocessens reelle pris</h1>
   <div class="thesis">
     <p class="lead" id="lead"></p>
     <div class="invoice" aria-label="Eksempel: fakturering af én konsulenttime">
       <div class="row"><span>Faktura: 1 konsulenttime</span><span class="num" id="inv-val"></span></div>
-      <div class="row"><span>− Sælger, SaSMS + Salesforce</span><span class="num" id="inv-s"></span></div>
+      <div class="row"><span>− Sælger, System A + System B</span><span class="num" id="inv-s"></span></div>
       <div class="row"><span>− Intern sælger</span><span class="num" id="inv-i"></span></div>
       <div class="row"><span>− Bogholder</span><span class="num" id="inv-b"></span></div>
       <div class="row total"><span>Tilbage efter administration</span><span class="num net" id="inv-net"></span></div>
@@ -166,7 +166,7 @@ footer{font-size:.82rem;color:var(--muted)}
         <input type="range" id="sellers" min="1" max="10" step="1" value="5"></div>
       <div class="ctl"><div class="top"><label for="opd">Ordrer pr. sælger pr. dag</label><output id="o-opd"></output></div>
         <input type="range" id="opd" min="0.1" max="3" step="0.01" value="1">
-        <small>Historik fra SaSMS: 0,23 pr. sælger pr. dag</small></div>
+        <small>Historik fra System A: 0,23 pr. sælger pr. dag</small></div>
       <div class="ctl"><div class="top"><label for="inv">Fakturaer pr. ordre (gns.)</label><output id="o-inv"></output></div>
         <input type="range" id="inv" min="1" max="3" step="0.1" value="1.4">
         <small>8 af 42 ordrer faktureres i 3 rater, dvs. 1,4 i snit</small></div>
@@ -201,13 +201,13 @@ footer{font-size:.82rem;color:var(--muted)}
     <hr>
     <fieldset>
       <legend><h3>Minutter pr. ordre</h3></legend>
-      <div class="pairhead"><span>I dag (SaSMS)</span><span>Optimeret system</span></div>
+      <div class="pairhead"><span>I dag (System A)</span><span>Optimeret system</span></div>
       <div class="steplabel">Sælger: klargøring af ordre</div>
       <div class="pair">
         <div class="ctl"><div class="top"><label for="t1a">I dag</label><output id="o-t1a"></output></div><input type="range" id="t1a" min="10" max="120" step="5" value="60"></div>
         <div class="ctl"><div class="top"><label for="t1b">Optimeret</label><output id="o-t1b"></output></div><input type="range" id="t1b" min="0" max="120" step="5" value="15"></div>
       </div>
-      <div class="steplabel">Sælger: registrering i Salesforce</div>
+      <div class="steplabel">Sælger: registrering i System B</div>
       <div class="pair">
         <div class="ctl"><div class="top"><label for="t2a">I dag</label><output id="o-t2a"></output></div><input type="range" id="t2a" min="0" max="60" step="5" value="15"></div>
         <div class="ctl"><div class="top"><label for="t2b">Optimeret</label><output id="o-t2b"></output></div><input type="range" id="t2b" min="0" max="60" step="5" value="5"></div>
@@ -241,8 +241,8 @@ footer{font-size:.82rem;color:var(--muted)}
         <div class="barrow"><span class="lbl">Optimeret</span><div class="track" id="bar-b"></div><span class="tot" id="bar-b-t"></span></div>
       </div>
       <div class="legend">
-        <span><i style="background:var(--c1)"></i>Sælger, SaSMS</span>
-        <span><i style="background:var(--c2)"></i>Sælger, Salesforce</span>
+        <span><i style="background:var(--c1)"></i>Sælger, System A</span>
+        <span><i style="background:var(--c2)"></i>Sælger, System B</span>
         <span><i style="background:var(--c3)"></i>Intern sælger</span>
         <span><i style="background:var(--c4)"></i>Bogholder</span>
       </div>
@@ -273,12 +273,12 @@ footer{font-size:.82rem;color:var(--muted)}
 </div>
 
 <section class="section">
-  <div><span class="eyebrow">Datagrundlag</span><h2>42 ordrer fra SaSMS, 29-05-2026 til 05-10-2026</h2></div>
+  <div><span class="eyebrow">Datagrundlag</span><h2>42 ordrer fra System A, 29-05-2026 til 05-10-2026</h2></div>
   <p>De 42 fortløbende ordrer dækker 92 arbejdsdage. Sælger A står for 37, Sælger B for 5. Kunder og medarbejdere er anonymiseret med alias, og ordrerne er nummereret #01–#42. Proceskosten herunder er beregnet med de nuværende tal i panelet og bruger det faktiske antal fakturaer pr. ordre.</p>
   <div class="facts">
     <div class="fact"><span class="v num" id="f1"></span><p id="f1t"></p></div>
     <div class="fact"><span class="v num">8 af 42</span><p>ordrer faktureres i 3 rater. Hver rate er en ny faktura og en ny bogføring.</p></div>
-    <div class="fact"><span class="v num">5 ordrer</span><p>for én Octoplant-aftale med Kunde K (#02–#06), fordi kundens 5 selskaber faktureres hver for sig. Hele processen gennemføres 5 gange.</p></div>
+    <div class="fact"><span class="v num">5 ordrer</span><p>for én licensaftale med Kunde K (#02–#06), fordi kundens 5 selskaber faktureres hver for sig. Hele processen gennemføres 5 gange.</p></div>
   </div>
   <div class="tbl panel" style="padding:8px 10px"><table>
     <thead><tr><th>Ordreværdi</th><th class="n">Antal</th><th class="n">Samlet værdi</th><th class="n">Proceskost i alt</th><th class="n">Proceskost i % af værdi</th></tr></thead>
@@ -305,59 +305,76 @@ footer{font-size:.82rem;color:var(--muted)}
     <ul>
       <li>Frigjort tid regnes som kapacitet: den samme bemanding kan behandle flere ordrer. Faktoren er minutter i dag ÷ minutter optimeret.</li>
       <li>Konsulenttimen til 1.300 kr. er den simpleste ordretype og vurderet til 1 times sælgertid. Licenser og fornyelser tager typisk længere.</li>
-      <li>Ikke medregnet: rettelser og kreditnotaer, likviditet ved forsinket fakturering, oplæring i SaSMS og afhængighed af én intern udvikler.</li>
+      <li>Ikke medregnet: rettelser og kreditnotaer, likviditet ved forsinket fakturering, oplæring i System A og afhængighed af én intern udvikler.</li>
       <li>Optimerede tider er antagelser for et system med én registrering og automatisk overførsel. De skal valideres ved en tidsmåling.</li>
     </ul>
   </div>
 </section>
 
-<footer>Kilde: SaSMS-ordreliste pr. 07-10-2026 og interne lønantagelser. Alle beløb i DKK ekskl. moms.</footer>
+<section class="section">
+  <div><span class="eyebrow">Referencer</span><h2>Alias i beregneren</h2></div>
+  <p>Beregneren er anonymiseret. Nøglen til alle alias opbevares af forfatteren.</p>
+  <div class="tbl panel" style="padding:8px 10px"><table>
+    <thead><tr><th>Alias</th><th>Betydning</th></tr></thead>
+    <tbody>
+      <tr><td>System A</td><td>Det nuværende interne ordresystem, hjemmebygget</td></tr>
+      <tr><td>System B</td><td>Koncernens CRM, hvor alle ordrer også registreres</td></tr>
+      <tr><td>Optimeret system</td><td>Et nyt ordresystem med én registrering og automatisk overførsel</td></tr>
+      <tr><td>Sælger A, Sælger B</td><td>De to sælgere, der har ordrer i perioden</td></tr>
+      <tr><td>Kunde 01–30, Kunde K</td><td>Kunderne i perioden. Kunde K har 5 selskaber, som faktureres hver for sig</td></tr>
+      <tr><td>Produkt X, Produkt Y</td><td>De to softwareprodukter, der sælges licenser til. Niveau 1–3 er produktets licensniveauer</td></tr>
+      <tr><td>#01–#42</td><td>De 42 ordrer i perioden 29-05-2026 til 05-10-2026, nummereret fortløbende med ældste først. Hvert nummer svarer 1:1 til et ordrenummer (D-nummer) i System A</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>Kilde: ordreliste fra System A pr. 07-10-2026 og interne lønantagelser. Alle beløb i DKK ekskl. moms.</footer>
 </div>
 
 <script>
 const ORDERS = [
-["#42","B","Kunde 01","Idus","Fornyelse","05-10-2026",11880,0],
-["#41","B","Kunde 02","Idus Online","Fornyelse","02-10-2026",14625,0],
-["#40","A","Kunde 03","Add on: Asset Lifecycle + API","Licens","30-09-2026",120000,0],
-["#39","A","Kunde 04","Octoplant Core","Licens","29-09-2026",0,0],
-["#38","A","Kunde 05","Idus","Fornyelse","29-09-2026",41915,0],
-["#37","A","Kunde 05","Idus IS","Fornyelse","29-09-2026",19757,0],
+["#42","B","Kunde 01","Produkt X","Fornyelse","05-10-2026",11880,0],
+["#41","B","Kunde 02","Produkt X","Fornyelse","02-10-2026",14625,0],
+["#40","A","Kunde 03","Tilkøbsmodul","Licens","30-09-2026",120000,0],
+["#39","A","Kunde 04","Produkt Y","Licens","29-09-2026",0,0],
+["#38","A","Kunde 05","Produkt X","Fornyelse","29-09-2026",41915,0],
+["#37","A","Kunde 05","Produkt X","Fornyelse","29-09-2026",19757,0],
 ["#36","A","Kunde 06","Fornyelse","Fornyelse","24-09-2026",2041200,0],
-["#35","B","Kunde 07","Idus Online Enterprise licens","Licens","22-09-2026",6575,0],
-["#34","A","Kunde 08","2026 - 6 x Idus Online Pro","Fornyelse","11-09-2026",37800,37800],
+["#35","B","Kunde 07","Produkt X niveau 3","Licens","22-09-2026",6575,0],
+["#34","A","Kunde 08","2026 - 6 x Produkt X niveau 2","Fornyelse","11-09-2026",37800,37800],
 ["#33","A","Kunde 09","Renewal","Fornyelse","11-09-2026",170100,56700],
-["#32","B","Kunde 10","4 x Idus Online Professional","Licens","04-09-2026",14700,14700],
+["#32","B","Kunde 10","4 x Produkt X niveau 2","Licens","04-09-2026",14700,14700],
 ["#31","A","Kunde 11","Klippekort - 10 timer","Konsulent","02-09-2026",11700,11700],
-["#30","A","Kunde 12","3 ekstra Idus Online Professional","Licens","01-09-2026",18000,18000],
-["#29","B","Kunde 13","Udvidelse 1 ekstra Idus Online","Licens","31-08-2026",5900,5900],
-["#28","A","Kunde 14","Octoplant","Fornyelse","31-08-2026",318765,101115],
-["#27","A","Kunde 15","Octoplant","Fornyelse","27-08-2026",66587,66587],
-["#26","A","Kunde 16","2 x Idus Online","Fornyelse","26-08-2026",12600,12600],
-["#25","A","Kunde 17","1x Idus Online","Fornyelse","21-08-2026",6600,6600],
+["#30","A","Kunde 12","3 ekstra Produkt X niveau 2","Licens","01-09-2026",18000,18000],
+["#29","B","Kunde 13","Udvidelse 1 ekstra Produkt X","Licens","31-08-2026",5900,5900],
+["#28","A","Kunde 14","Produkt Y","Fornyelse","31-08-2026",318765,101115],
+["#27","A","Kunde 15","Produkt Y","Fornyelse","27-08-2026",66587,66587],
+["#26","A","Kunde 16","2 x Produkt X","Fornyelse","26-08-2026",12600,12600],
+["#25","A","Kunde 17","1x Produkt X","Fornyelse","21-08-2026",6600,6600],
 ["#24","A","Kunde 18","Fornyelse","Fornyelse","21-08-2026",50925,50925],
-["#23","A","Kunde 19","Opgradering til Enterprise + 1","Licens","21-08-2026",11360,11360],
-["#22","A","Kunde 20","3 x ekstra Idus Online Professional","Licens","20-08-2026",20475,20475],
-["#21","A","Kunde 21","Idus Online","Fornyelse","17-08-2026",31500,31500],
+["#23","A","Kunde 19","Opgradering til niveau 3 + 1","Licens","21-08-2026",11360,11360],
+["#22","A","Kunde 20","3 x ekstra Produkt X niveau 2","Licens","20-08-2026",20475,20475],
+["#21","A","Kunde 21","Produkt X","Fornyelse","17-08-2026",31500,31500],
 ["#20","A","Kunde 22","Klippekort - 15 timer","Konsulent","14-08-2026",17550,17550],
-["#19","A","Kunde 23","Idus","Fornyelse","11-08-2026",63000,63000],
-["#18","A","Kunde 24","Renewal - 2026 - 5 x Idus","Fornyelse","05-08-2026",19800,19800],
-["#17","A","Kunde 25","Ekstra Idus bruger","Licens","10-07-2026",6225,6225],
+["#19","A","Kunde 23","Produkt X","Fornyelse","11-08-2026",63000,63000],
+["#18","A","Kunde 24","Renewal - 2026 - 5 x Produkt X","Fornyelse","05-08-2026",19800,19800],
+["#17","A","Kunde 25","Ekstra Produkt X-bruger","Licens","10-07-2026",6225,6225],
 ["#16","A","Kunde 26","Konsulentassistance","Konsulent","06-07-2026",0,0],
-["#15","A","Kunde 12","Ekstra Idus Online bruger","Licens","03-07-2026",8100,8100],
+["#15","A","Kunde 12","Ekstra Produkt X-bruger","Licens","03-07-2026",8100,8100],
 ["#14","A","Kunde 27","Fornyelse","Fornyelse","02-07-2026",15840,15840],
 ["#13","A","Kunde 28","Konsulentassistance klippekort","Konsulent","01-07-2026",35100,35100],
-["#12","A","Kunde 17","1x Idus Online Professional + 1","Licens","24-06-2026",18300,18300],
-["#11","A","Kunde 22","Idus","Fornyelse","23-06-2026",42815,42815],
+["#12","A","Kunde 17","1x Produkt X niveau 2 + 1","Licens","24-06-2026",18300,18300],
+["#11","A","Kunde 22","Produkt X","Fornyelse","23-06-2026",42815,42815],
 ["#10","A","Kunde 26","Konsulentassistance","Konsulent","22-06-2026",0,0],
 ["#09","A","Kunde 03","Renewal & Upgrade","Fornyelse","17-06-2026",1055315,334755],
-["#08","A","Kunde 12","2 x Idus Online Professional +","Licens","11-06-2026",24900,24900],
+["#08","A","Kunde 12","2 x Produkt X niveau 2 +","Licens","11-06-2026",24900,24900],
 ["#07","A","Kunde 29","Klippekort - 20 timer","Konsulent","11-06-2026",23400,23400],
-["#06","A","Kunde K (selskab 1)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["#05","A","Kunde K (selskab 2)","Octoplant","Fornyelse","08-06-2026",21461,6943],
-["#04","A","Kunde K (selskab 3)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["#03","A","Kunde K (selskab 4)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["#02","A","Kunde K (selskab 5)","Octoplant","Fornyelse","08-06-2026",128765,41659],
-["#01","A","Kunde 30","Idus Online Basic - 1 ekstra bruger","Licens","29-05-2026",3300,3300]
+["#06","A","Kunde K (selskab 1)","Produkt Y","Fornyelse","08-06-2026",52119,16862],
+["#05","A","Kunde K (selskab 2)","Produkt Y","Fornyelse","08-06-2026",21461,6943],
+["#04","A","Kunde K (selskab 3)","Produkt Y","Fornyelse","08-06-2026",52119,16862],
+["#03","A","Kunde K (selskab 4)","Produkt Y","Fornyelse","08-06-2026",52119,16862],
+["#02","A","Kunde K (selskab 5)","Produkt Y","Fornyelse","08-06-2026",128765,41659],
+["#01","A","Kunde 30","Produkt X niveau 1 - 1 ekstra bruger","Licens","29-05-2026",3300,3300]
 ].map(r=>({nr:r[0],s:r[1],k:r[2],ind:r[3],type:r[4],dato:r[5],v:r[6],f:r[7],
   rater:(r[7]>0&&r[7]<r[6])?Math.round(r[6]/r[7]):1}));
 
@@ -379,8 +396,8 @@ function model(p){
   const rate = m => (m*12*load + p.ovh) / prodHours;
   const rS = rate(p['w-s']), rI = rate(p['w-i']), rB = rate(p['w-b']);
   const steps = [
-    {n:'Sælger: klargøring i SaSMS', role:'Sælger', r:rS, a:p.t1a, b:p.t1b, c:'var(--c1)'},
-    {n:'Sælger: registrering i Salesforce', role:'Sælger', r:rS, a:p.t2a, b:p.t2b, c:'var(--c2)'},
+    {n:'Sælger: klargøring i System A', role:'Sælger', r:rS, a:p.t1a, b:p.t1b, c:'var(--c1)'},
+    {n:'Sælger: registrering i System B', role:'Sælger', r:rS, a:p.t2a, b:p.t2b, c:'var(--c2)'},
     {n:'Intern sælger: distributør og klargøring', role:'Intern sælger', r:rI, a:p.t3a, b:p.t3b, c:'var(--c3)'},
     {n:'Bogholder: bogføring ('+nf1.format(p.inv)+' fakt.)', role:'Bogholder', r:rB, a:p.t4a*p.inv, b:p.t4b*p.inv, c:'var(--c4)'}
   ];
@@ -424,7 +441,7 @@ function render(){
   $('inv-net').textContent = kr(1300-consult);
   $('inv-tag').textContent = `Administration æder ${pct(consult/1300)} af omsætningen. Med optimeret system: ${pct(consultB/1300)}.`;
 
-  $('lead').innerHTML = `Med <b>${p.sellers} sælgere</b> og <b>${nf2.format(p.opd)} ordre pr. sælger pr. dag</b> håndterer Novotek ca. <b>${nf0.format(ordersY)} ordrer om året</b>. Hver ordre koster i dag <b>${kr(m.costA)}</b> og <b>${nf0.format(m.minA)} minutter</b> i intern administration, før kunden har fået noget. Det er <b>${nf0.format(hA)} timer</b> eller <b>${nf1.format(hA/m.prodHours)} årsværk</b> om året. Et system med én registrering og automatisk overførsel kan spare <b>${tkr(yA-yB)}</b> om året og lade de samme folk håndtere <b>${isFinite(factor)?nf1.format(factor)+' gange':'langt'} så mange ordrer</b>.`;
+  $('lead').innerHTML = `Med <b>${p.sellers} sælgere</b> og <b>${nf2.format(p.opd)} ordre pr. sælger pr. dag</b> håndterer virksomheden ca. <b>${nf0.format(ordersY)} ordrer om året</b>. Hver ordre koster i dag <b>${kr(m.costA)}</b> og <b>${nf0.format(m.minA)} minutter</b> i intern administration, før kunden har fået noget. Det er <b>${nf0.format(hA)} timer</b> eller <b>${nf1.format(hA/m.prodHours)} årsværk</b> om året. Et nyt ordresystem med én registrering og automatisk overførsel kan spare <b>${tkr(yA-yB)}</b> om året og lade de samme folk håndtere <b>${isFinite(factor)?nf1.format(factor)+' gange':'langt'} så mange ordrer</b>.`;
 
   $('k1').textContent = kr(m.costA);
   $('k1s').textContent = `${nf0.format(m.minA)} min. · optimeret ${kr(m.costB)}`;
