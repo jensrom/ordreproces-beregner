@@ -274,11 +274,11 @@ footer{font-size:.82rem;color:var(--muted)}
 
 <section class="section">
   <div><span class="eyebrow">Datagrundlag</span><h2>42 ordrer fra SaSMS, 29-05-2026 til 05-10-2026</h2></div>
-  <p>Ordrerne D35383 til D35424 dækker 92 arbejdsdage. Sælger EN står for 37, sælger JRO for 5. Kundenavne er anonymiseret. Proceskosten herunder er beregnet med de nuværende tal i panelet og bruger det faktiske antal fakturaer pr. ordre.</p>
+  <p>De 42 fortløbende ordrer dækker 92 arbejdsdage. Sælger A står for 37, Sælger B for 5. Kunder og medarbejdere er anonymiseret med alias, og ordrerne er nummereret #01–#42. Proceskosten herunder er beregnet med de nuværende tal i panelet og bruger det faktiske antal fakturaer pr. ordre.</p>
   <div class="facts">
     <div class="fact"><span class="v num" id="f1"></span><p id="f1t"></p></div>
     <div class="fact"><span class="v num">8 af 42</span><p>ordrer faktureres i 3 rater. Hver rate er en ny faktura og en ny bogføring.</p></div>
-    <div class="fact"><span class="v num">5 ordrer</span><p>for én Octoplant-aftale med samme kunde (D35384–D35388), fordi kundens selskaber skal deles op. Hele processen gennemføres 5 gange.</p></div>
+    <div class="fact"><span class="v num">5 ordrer</span><p>for én Octoplant-aftale med Kunde K (#02–#06), fordi kundens 5 selskaber faktureres hver for sig. Hele processen gennemføres 5 gange.</p></div>
   </div>
   <div class="tbl panel" style="padding:8px 10px"><table>
     <thead><tr><th>Ordreværdi</th><th class="n">Antal</th><th class="n">Samlet værdi</th><th class="n">Proceskost i alt</th><th class="n">Proceskost i % af værdi</th></tr></thead>
@@ -316,48 +316,48 @@ footer{font-size:.82rem;color:var(--muted)}
 
 <script>
 const ORDERS = [
-["D35424","JRO","Kunde 01","Idus","Fornyelse","05-10-2026",11880,0],
-["D35423","JRO","Kunde 02","Idus Online","Fornyelse","02-10-2026",14625,0],
-["D35422","EN","Kunde 03","Add on: Asset Lifecycle + API","Licens","30-09-2026",120000,0],
-["D35421","EN","Kunde 04","Octoplant Core","Licens","29-09-2026",0,0],
-["D35420","EN","Kunde 05","Idus","Fornyelse","29-09-2026",41915,0],
-["D35419","EN","Kunde 05","Idus IS","Fornyelse","29-09-2026",19757,0],
-["D35418","EN","Kunde 06","Fornyelse","Fornyelse","24-09-2026",2041200,0],
-["D35417","JRO","Kunde 07","Idus Online Enterprise licens","Licens","22-09-2026",6575,0],
-["D35416","EN","Kunde 08","2026 - 6 x Idus Online Pro","Fornyelse","11-09-2026",37800,37800],
-["D35415","EN","Kunde 09","Renewal","Fornyelse","11-09-2026",170100,56700],
-["D35414","JRO","Kunde 10","4 x Idus Online Professional","Licens","04-09-2026",14700,14700],
-["D35413","EN","Kunde 11","Klippekort - 10 timer","Konsulent","02-09-2026",11700,11700],
-["D35412","EN","Kunde 12","3 ekstra Idus Online Professional","Licens","01-09-2026",18000,18000],
-["D35411","JRO","Kunde 13","Udvidelse 1 ekstra Idus Online","Licens","31-08-2026",5900,5900],
-["D35410","EN","Kunde 14","Octoplant","Fornyelse","31-08-2026",318765,101115],
-["D35409","EN","Kunde 15","Octoplant","Fornyelse","27-08-2026",66587,66587],
-["D35408","EN","Kunde 16","2 x Idus Online","Fornyelse","26-08-2026",12600,12600],
-["D35407","EN","Kunde 17","1x Idus Online","Fornyelse","21-08-2026",6600,6600],
-["D35406","EN","Kunde 18","Fornyelse","Fornyelse","21-08-2026",50925,50925],
-["D35405","EN","Kunde 19","Opgradering til Enterprise + 1","Licens","21-08-2026",11360,11360],
-["D35404","EN","Kunde 20","3 x ekstra Idus Online Professional","Licens","20-08-2026",20475,20475],
-["D35403","EN","Kunde 21","Idus Online","Fornyelse","17-08-2026",31500,31500],
-["D35402","EN","Kunde 22","Klippekort - 15 timer","Konsulent","14-08-2026",17550,17550],
-["D35401","EN","Kunde 23","Idus","Fornyelse","11-08-2026",63000,63000],
-["D35400","EN","Kunde 24","Renewal - 2026 - 5 x Idus","Fornyelse","05-08-2026",19800,19800],
-["D35399","EN","Kunde 25","Ekstra Idus bruger","Licens","10-07-2026",6225,6225],
-["D35398","EN","Kunde 26","Konsulentassistance","Konsulent","06-07-2026",0,0],
-["D35397","EN","Kunde 12","Ekstra Idus Online bruger","Licens","03-07-2026",8100,8100],
-["D35396","EN","Kunde 27","Fornyelse","Fornyelse","02-07-2026",15840,15840],
-["D35395","EN","Kunde 28","Konsulentassistance klippekort","Konsulent","01-07-2026",35100,35100],
-["D35394","EN","Kunde 17","1x Idus Online Professional + 1","Licens","24-06-2026",18300,18300],
-["D35393","EN","Kunde 22","Idus","Fornyelse","23-06-2026",42815,42815],
-["D35392","EN","Kunde 26","Konsulentassistance","Konsulent","22-06-2026",0,0],
-["D35391","EN","Kunde 03","Renewal & Upgrade","Fornyelse","17-06-2026",1055315,334755],
-["D35390","EN","Kunde 12","2 x Idus Online Professional +","Licens","11-06-2026",24900,24900],
-["D35389","EN","Kunde 29","Klippekort - 20 timer","Konsulent","11-06-2026",23400,23400],
-["D35388","EN","Kunde S (selskab 1)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["D35387","EN","Kunde S (selskab 2)","Octoplant","Fornyelse","08-06-2026",21461,6943],
-["D35386","EN","Kunde S (selskab 3)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["D35385","EN","Kunde S (selskab 4)","Octoplant","Fornyelse","08-06-2026",52119,16862],
-["D35384","EN","Kunde S (selskab 5)","Octoplant","Fornyelse","08-06-2026",128765,41659],
-["D35383","EN","Kunde 30","Idus Online Basic - 1 ekstra bruger","Licens","29-05-2026",3300,3300]
+["#42","B","Kunde 01","Idus","Fornyelse","05-10-2026",11880,0],
+["#41","B","Kunde 02","Idus Online","Fornyelse","02-10-2026",14625,0],
+["#40","A","Kunde 03","Add on: Asset Lifecycle + API","Licens","30-09-2026",120000,0],
+["#39","A","Kunde 04","Octoplant Core","Licens","29-09-2026",0,0],
+["#38","A","Kunde 05","Idus","Fornyelse","29-09-2026",41915,0],
+["#37","A","Kunde 05","Idus IS","Fornyelse","29-09-2026",19757,0],
+["#36","A","Kunde 06","Fornyelse","Fornyelse","24-09-2026",2041200,0],
+["#35","B","Kunde 07","Idus Online Enterprise licens","Licens","22-09-2026",6575,0],
+["#34","A","Kunde 08","2026 - 6 x Idus Online Pro","Fornyelse","11-09-2026",37800,37800],
+["#33","A","Kunde 09","Renewal","Fornyelse","11-09-2026",170100,56700],
+["#32","B","Kunde 10","4 x Idus Online Professional","Licens","04-09-2026",14700,14700],
+["#31","A","Kunde 11","Klippekort - 10 timer","Konsulent","02-09-2026",11700,11700],
+["#30","A","Kunde 12","3 ekstra Idus Online Professional","Licens","01-09-2026",18000,18000],
+["#29","B","Kunde 13","Udvidelse 1 ekstra Idus Online","Licens","31-08-2026",5900,5900],
+["#28","A","Kunde 14","Octoplant","Fornyelse","31-08-2026",318765,101115],
+["#27","A","Kunde 15","Octoplant","Fornyelse","27-08-2026",66587,66587],
+["#26","A","Kunde 16","2 x Idus Online","Fornyelse","26-08-2026",12600,12600],
+["#25","A","Kunde 17","1x Idus Online","Fornyelse","21-08-2026",6600,6600],
+["#24","A","Kunde 18","Fornyelse","Fornyelse","21-08-2026",50925,50925],
+["#23","A","Kunde 19","Opgradering til Enterprise + 1","Licens","21-08-2026",11360,11360],
+["#22","A","Kunde 20","3 x ekstra Idus Online Professional","Licens","20-08-2026",20475,20475],
+["#21","A","Kunde 21","Idus Online","Fornyelse","17-08-2026",31500,31500],
+["#20","A","Kunde 22","Klippekort - 15 timer","Konsulent","14-08-2026",17550,17550],
+["#19","A","Kunde 23","Idus","Fornyelse","11-08-2026",63000,63000],
+["#18","A","Kunde 24","Renewal - 2026 - 5 x Idus","Fornyelse","05-08-2026",19800,19800],
+["#17","A","Kunde 25","Ekstra Idus bruger","Licens","10-07-2026",6225,6225],
+["#16","A","Kunde 26","Konsulentassistance","Konsulent","06-07-2026",0,0],
+["#15","A","Kunde 12","Ekstra Idus Online bruger","Licens","03-07-2026",8100,8100],
+["#14","A","Kunde 27","Fornyelse","Fornyelse","02-07-2026",15840,15840],
+["#13","A","Kunde 28","Konsulentassistance klippekort","Konsulent","01-07-2026",35100,35100],
+["#12","A","Kunde 17","1x Idus Online Professional + 1","Licens","24-06-2026",18300,18300],
+["#11","A","Kunde 22","Idus","Fornyelse","23-06-2026",42815,42815],
+["#10","A","Kunde 26","Konsulentassistance","Konsulent","22-06-2026",0,0],
+["#09","A","Kunde 03","Renewal & Upgrade","Fornyelse","17-06-2026",1055315,334755],
+["#08","A","Kunde 12","2 x Idus Online Professional +","Licens","11-06-2026",24900,24900],
+["#07","A","Kunde 29","Klippekort - 20 timer","Konsulent","11-06-2026",23400,23400],
+["#06","A","Kunde K (selskab 1)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["#05","A","Kunde K (selskab 2)","Octoplant","Fornyelse","08-06-2026",21461,6943],
+["#04","A","Kunde K (selskab 3)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["#03","A","Kunde K (selskab 4)","Octoplant","Fornyelse","08-06-2026",52119,16862],
+["#02","A","Kunde K (selskab 5)","Octoplant","Fornyelse","08-06-2026",128765,41659],
+["#01","A","Kunde 30","Idus Online Basic - 1 ekstra bruger","Licens","29-05-2026",3300,3300]
 ].map(r=>({nr:r[0],s:r[1],k:r[2],ind:r[3],type:r[4],dato:r[5],v:r[6],f:r[7],
   rater:(r[7]>0&&r[7]<r[6])?Math.round(r[6]/r[7]):1}));
 
